@@ -1,0 +1,29 @@
+<div class="author">
+    <h1 class="author__heading">Hello, I'm Trevor Childs.</h1>
+    <p class="author__body">Web Developer, Student and Programmer Hobbiest</p>
+</div>
+
+<img src="img/visual-studio.png" alt="vis studio"/>
+
+<section class="articles">
+    <h2 class="articles__heading">Latest Posts</h2>
+
+    <!-- Dummy data displayed until we include posts later on. -->
+    <ul class="article-ul">
+        
+        <% data.forEach(post => { %>
+            <li>
+                <a href="/post/<%= post._id %>">
+                    <span><%- post.title %></span>
+                    <span class="article-list__date">
+                        <% post.createdAt.toDateString() %>
+                    </span>
+                </a>
+            </li>
+        <%});  %>
+    </ul>
+
+    <a href="#" class="pagination">
+        &lt; View Older Posts
+    </a>
+</section>
