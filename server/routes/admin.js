@@ -8,6 +8,41 @@ const jwtSecret = process.env.JWT_SECRET;
 const adminLayout = "../views/layouts/admin";
 
 /**
+ * Check login middleware
+ */
+const authMiddleware = (req,res,next) => {
+  const token = req.cookies.token;
+
+  if(!token){
+    return res.status(401).json({message : "Unauthorized"});
+  }
+
+  try {
+    const decoded = jwt.verify(token, jwtSecret);
+    req.userId = decoded.userId;
+    next();
+  } catch (error) {
+    return res.status(401).json({message : "Unauthorized"});
+  }
+}
+
+/**
+ * GET /
+ * admin - check login
+ */
+router.get("/admin", async ( req ,res)=>{
+  try {
+    const locals = {
+      title: "Admin",
+      decsription: "A blog template made with NodeJS and ExpressJS"
+    };
+    
+    res.render("admin/index",{locals,layout:adminLayout});
+  } catch (error) {
+    console.log(error);
+  }
+})
+/**
  * POST /login
  * Admin - Login Account
  */
@@ -91,24 +126,94 @@ router.get("/logout", authMiddleware, async (req,res) => {
     console.log(error);
   }
 });
-// second video--------------------
-/*
-  GET /
-  Admin - Check Login
-*/
-// router.get("/admin", async (req ,res) => {
-//   try {
-//     const locals = {
-//       title: "Admin",
-//       decsription: "A blog template made with NodeJS and ExpressJS",
-//     }
 
-//     res.render("admin/index", {locals, layout: adminLayout});
-//   } catch (error) {
-//     console.log(error);
-//   }
-// });
+/**
+ * Get /add-post
+ * admin - create new post
+ */
+router.get("/add-post", authMiddleware, async (req,res)=>{
+  try {
+    const locals = {
+      title: "Create Post",
+      decsription: "A blog template made with NodeJS and ExpressJS and EJS",
+    };
 
-// module.exports = router;
+    const data = await Post.find();
+    res.render("admin/add-post", {locals, data, layout: adminLayout});
+  } catch (error) {
+    console.log(error);
+  }
+})
+
+/**
+ * Post /add-post
+ * admin - create new post
+ */
+router.post("/add-post/", authMiddleware, async (req,res)=>{
+  try {
+    console.log(req.body);
+    try {
+      const newPost = new Post({
+        title: req.body.title,
+        body: req.body.body,
+      });
+      await Post.create(newPost);
+      res.redirect("/dashboard");
+    } catch (error) {
+      console.log(error);
+    }
+  } catch (error) {
+    console.log(error);
+  }
+})
+
+/**
+ * Get /edit-post
+ * Admin - update post
+ */
+router.get("/edit-post/:id", authMiddleware, async (req,res)=>{
+  try {
+    const locals = {
+      title: "Edit Post",
+      decsription: "A blog template made with NodeJS and ExpressJS and EJS"
+    };
+
+    const data = await Post.findOne({ _id: req.params.id});
+    res.render("admin/edit-post", {locals, data, layout: adminLayout});
+  } catch (error) {
+    console.log(error);
+  }
+})
+
+/**
+ * PUT /edit-post
+ * Admin - edit post
+ */
+router.put("/edit-post/:id", authMiddleware, async (req,res)=>{
+  try {
+    await Post.findByIdAndUpdate(req.params.id, {
+      title: req.body.title,
+      body: req.body.body,
+      updatedAt: Date.now(),
+    });
+    res.redirect(`/dashboard`);
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+/**
+ * DELETE /delete-post
+ * Admin - Delete Post
+ */
+router.delete("/delete-post/:id", authMiddleware, async (req,res) =>{
+  try {
+    await Post.deleteOne({ _id: req.params.id});
+    res.redirect("/dashboard");
+  } catch (error) {
+    console.log(error);
+  }
+})
+module.exports = router;
 
 //0.17 first video part 3
