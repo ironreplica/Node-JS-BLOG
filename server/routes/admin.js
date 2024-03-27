@@ -216,4 +216,3 @@ router.delete("/delete-post/:id", authMiddleware, async (req,res) =>{
 })
 module.exports = router;
 
-//0.17 first video part 3
