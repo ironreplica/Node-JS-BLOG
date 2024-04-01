@@ -92,6 +92,7 @@ router.get("/dashboard", authMiddleware, async (req,res) => {
  */
 router.post("/register", async (req,res)=> {
   try {
+    console.log(req.body);
     const {username,password} = req.body;
     const hashedPassword = await bcrypt.hash(password,10);
     
@@ -113,7 +114,7 @@ router.post("/register", async (req,res)=> {
   } catch (error) {
     console.log(error);
   }
-})
+});
 /**
  * GET /logout
  * admin - logout

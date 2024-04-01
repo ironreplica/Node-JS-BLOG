@@ -11,5 +11,7 @@ const connectDB = async ()=>{
         process.exit(1);
     }
 }
-// left off at part 5: Part 5: Finishing touches to pull up a single post.
+
 module.exports = connectDB;
+
+// TODO FIND OUT HOW THIS PUSHES TO DB
